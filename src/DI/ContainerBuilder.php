@@ -206,7 +206,9 @@ class ContainerBuilder implements Definitions
 	{
 		$this->needsResolve = true;
 		$name = $this->aliases[$name] ?? $name;
-		unset($this->definitions[$name], $this->lowerNames[strtolower($name)]);
+		if (isset($this->definitions[$name])) {
+			unset($this->definitions[$name], $this->lowerNames[strtolower($name)]);
+		}
 	}
 
 

@@ -113,7 +113,13 @@ class Resolver
 	public function completeDefinition(Definition $def): void
 	{
 		try {
-			$def->complete($this->withCurrentService($def));
+			$resolver = $this->withCurrentService($def);
+			// Unnamed factory results retain local autowiring; named definitions must still belong to the builder.
+			if (($name = $def->getName(throw: false)) !== null && ($this->builder->getDefinitions()[$name] ?? null) !== $def) {
+				$resolver->currentService = null;
+			}
+
+			$def->complete($resolver);
 
 			if ($type = $def->getType()) {
 				$this->addDependency(new \ReflectionClass($type));
